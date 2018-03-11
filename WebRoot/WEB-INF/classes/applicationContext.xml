@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+	<!-- 配置连接池 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="url" value="jdbc:mysql:///ssh?useUnicode=true&amp;characterEncoding=UTF-8">
+		</property>
+		<property name="username" value="root">
+		</property>
+		<property name="password" value="">
+		</property>
+	</bean>
+	<!-- 配置SessionFactory --> 
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource"/>
+		</property>
+		<property name="mappingResources">  
+          <list>  
+            <value>/cn/ssh/DeptDomain/Department.hbm.xml</value>  
+          </list>  
+      </property>  
+      <property name="hibernateProperties">  
+        <props>  
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>  
+                <prop key="hibernate.hbm2ddl.auto">update</prop>  
+                <prop key="hibernate.show_sql">true</prop>  
+                <prop key="hibernate.format_sql">true</prop>  
+            </props>  
+      </property>  
+	</bean>
+	<bean id="deptDao" class="cn.ssh.DeptDaoImpl.DeptDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!-- 配置DAO的类 -->
+	
+	<!-- 配置Action的类 -->
+	<bean id="deptAction" class="cn.ssh.DeptActionImpl.DeptActionImpl" scope="prototype">
+		<!-- 手动注入Service -->
+		<property name="deptService" ref="deptService"></property>
+	</bean>
+	
+	<!-- 配置业务层的类 -->
+	<bean id="deptService" class="cn.ssh.DeptServiceImpl.DeptServiceImpl">
+		<!-- 注入DAO -->
+		<property name="deptDao" ref="deptDao"/>
+	</bean>
+	
+	
+	
+</beans>
